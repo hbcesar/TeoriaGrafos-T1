@@ -6,10 +6,10 @@
 - gerar caminho entre vertices de entrada (c) e saida (n)
 
 Os valores para n são: 10, 50, 100, 500, 1000. Para cada
-valor de n um mı́nimo de 10 execuções são necessárias
+valor de n um mínimo de 10 execuções são necessárias
 
 Os valores para n são: 10, 50, 100, 500, 1000. Para cada
-valor de n um mı́nimo de 10 execuções são necessárias e, junto com os resultados
+valor de n um mínimo de 10 execuções são necessárias e, junto com os resultados
 individuais, mostrar a média dos tempos.
 
 ------------
@@ -34,10 +34,11 @@ from igraph import *
 def createVertices(n):
 	vertices = []
 	for i in xrange(n*n):
-		vertices.append(i)
+		v = Vertice(i)
+		vertices.append(v)
 	return vertices
 
-def createEdges(n):
+def createEdges(n, vertices):
 	edges = []
 	countColumn = 0
 	countLine = 0
@@ -47,22 +48,30 @@ def createEdges(n):
 
 		if i == 0:
 			print(i,i+1) , "," , (i,n+i)
+			v = vertices[i];
+			v.adj.append(i+1)
+			v.adj.append(n+i)
 
 		elif countLine == n-1:
 			if (i+1 < n*n):
 				print (i,i+1)
+				v.adj.append(i+1)
 
 		elif countColumn == n:
 			print (i, n+i)
 			countColumn = 0
 			countLine += 1
-
+			v.adj.append(n+i)
 
 		elif i % n != 0:
 			print(i,i+1) , "," , (i,n+i)
+			v.adj.append(i+1)
+			v.adj.append(n+i)
 
 		else:
 			print (i,i+1) , "," , (i, n+i)
+			v.adj.append(i+1)
+			v.adj.append(n+i)
 
 		
 	#print edges
@@ -78,13 +87,18 @@ class Maze(object):
 		self.start = 0
 		self.end = 0
 		
+class Vertice(object):
+	def __init__(self, label):
+		super(Vertice, self).__init__()
+		self.label = label
+		self.indice = 0
+		self.adj = []
+		self.distance = sys.maxsize
 
 
 def main(args):
 	v = createVertices(10)
-	createEdges(3)
-
-
+	createEdges(3, v)
 
 
 if __name__ == '__main__':
