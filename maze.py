@@ -25,11 +25,64 @@ n	o-o-o
 	| | | |
 	o-o-o
 
+Prim:
+prim(G) # G é grafo
+    # Escolhe qualquer vértice do grafo como vértice inicial/de partida
+    s ← seleciona-um-elemento(vertices(G))
+
+    para todo v ∈ vertices(G)
+        π[v] ← nulo
+    Q ← {(0, s)}
+    S ← ø
+
+    enquanto Q ≠ ø
+        v ← extrair-mín(Q)
+        S ← S ∪ {v}
+
+        para cada u adjacente a v
+            se u ∉ S e pesoDaAresta(π[u]→u) > pesoDaAresta(v→u)
+                Q ← Q \ {(pesoDaAresta(π[u]→u), u)}
+                Q ← Q ∪ {(pesoDaAresta(v→u), u)}
+                π[u] ← v
+
+    retorna {(π[v], v) | v ∈ vertices(G) e π[v] ≠ nulo}
+
+
+profundidade :
+1  procedure DFS(G,v):
+2      label v as discovered
+3      for all edges from v to w in G.adjacentEdges(v) do
+4          if vertex w is not labeled as discovered then
+5              recursively call DFS(G,w)
 """
 
 import sys
 from igraph import *
 #from random import rand
+
+class Stack(object):
+	def __init__(self, ):
+		super(Stack, self).__init__()
+		self.stack =[]
+
+		def push(elem):
+			self.stack.append(elem)
+
+		def pop(self):
+			return self.stack.pop()
+
+class Queue(object):
+	def __init__(self, ):
+		super(Stack, self).__init__()
+		self.queue =[]
+
+		def push(elem):
+			self.queue.insert(0,elem)
+
+		def pop(self):
+			return self.queue.pop()
+
+
 
 def createVertices(n):
 	vertices = []
@@ -98,7 +151,8 @@ class Vertice(object):
 
 def main(args):
 	v = createVertices(10)
-	createEdges(3, v)
+	createEdges(10, v)
+	print 
 
 
 if __name__ == '__main__':
