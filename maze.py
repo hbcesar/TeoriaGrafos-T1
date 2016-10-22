@@ -187,7 +187,17 @@ class Maze(object):
 		visited.append(v)
 		while set(self.vertices) != set(visited):
 			adj = self.getAdjList(visited)
-			return
+			for a in adj:
+				if a[0] in visited and a[1] in visited:
+					adj.remove(a)
+			print adj
+			e = choice(adj)
+			print e
+			w = e[1]
+			if w not in visited:
+				visited.append(w)
+				edges.append(e)
+		print edges
 		
 
 			
