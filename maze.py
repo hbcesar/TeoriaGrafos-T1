@@ -1,8 +1,47 @@
 # -*- coding: utf-8 -*-
 """
+##############################################
+acabei o prim, defini as estruturas de dados(ta chatinho de mexer,
+buuuut....)
+comecei a busca em largura, mas nao deu certo..confundindo criterio de
+parada com o algoritmo, tem q ver certinho.
 
-- gerar matriz "completa"
-- gerar arvore geradora minima
+sugestao de teste:
+o  o  o
+	
+o  o  o
+
+o  o  o 	
+
+a primeira coisa q imprime do jeito que tá, são as arestas q tem
+já com a arvore gerada por prim, desenha elas no grafico ali, tipo
+
+o--o  o
+|	  |
+o--o--o
+|  |  |
+o  o  o 
+
+e vai desenhando o que o algoritmo de visita sugere com algo do tipo
+o==o  o
+↓	
+o==o==o
+↓  ↓  ↓
+o  o  o 
+
+ah, raw_input() é tipo um scanf, to usanndo pra ir debugando
+###############################333##	
+
+
+#DONE:
+ - gerar matriz "completa"
+ - prim - gerar arvore geradora minima
+
+#TODO:
+ - DFS
+ - BFS
+
+
 - gerar caminho entre vertices de entrada (c) e saida (n)
 
 Os valores para n são: 10, 50, 100, 500, 1000. Para cada
@@ -73,25 +112,29 @@ from copy import copy
 
 class Stack(object):
 	def __init__(self, ):
-		super(Stack, self).__init__()
 		self.stack =[]
 
-		def push(elem):
-			self.stack.append(elem)
+	def push(self,elem):
+		self.stack.append(elem)
 
-		def pop(self):
-			return self.stack.pop()
+	def pop(self):
+		return self.stack.pop()
+
+	def isEmpty(self):
+			return len(self.stack) == 0
 
 class Queue(object):
 	def __init__(self, ):
-		super(Stack, self).__init__()
 		self.queue =[]
 
-		def push(elem):
-			self.queue.insert(0,elem)
+	def push(self,elem):
+		self.queue.insert(0,elem)
 
-		def pop(self):
-			return self.queue.pop()
+	def pop(self):
+		return self.queue.pop()
+
+	def isEmpty(self):
+		return len(self.queue) == 0
 
 
 def createVertices(n):
@@ -143,8 +186,14 @@ class Maze(object):
 		self.edges = createEdges(n)
 		self.spt = []
 		self.path = []
-		
-		
+
+	def printMaze(self):
+		for i in xrange(self.n+2):#*self.n):
+			for j in xrange(self.n+2):
+				#if
+				sys.stdout.write("x")
+			print ("")
+
 	
 	def adjacentVertices(self,vertice):
 		#retorna a lista de adjacencias de um vertice do grafo
@@ -190,16 +239,36 @@ class Maze(object):
 			for a in adj:
 				if a[0] in visited and a[1] in visited:
 					adj.remove(a)
-			print adj
 			e = choice(adj)
-			print e
-			w = e[1]
-			if w not in visited:
-				visited.append(w)
+			if e[0] not in visited :
+				visited.append(e[0])
 				edges.append(e)
-		print edges
-		
+			elif e[1] not in visited:
+				visited.append(e[1])
+				edges.append(e)
+		#print edges
+		#self.spt = edges
+		self.edges = edges
 
+	def bfs(self):
+		visited = []
+		q = Queue()
+		q.push(self.start)
+
+		while not q.isEmpty():
+			print "fila:" ,q.queue
+			print "visited: " ,visited
+			v = q.pop()
+			if v not in visited:
+				visited.append(v)
+				adj = self.adjacentVertices(v)
+				print "adj:" ,adj
+				for w in adj:
+					if w not in visited:
+						q.push(w)
+				raw_input()
+
+		
 			
 ###################################################			
 	def profundidade(vertice, visitados):
@@ -229,6 +298,10 @@ def main(args):
 	e = createEdges(n)
 	m = Maze(n)
 	m.prim()
+	print m.edges
+	p = m.bfs()
+	print p
+	#m.printMaze()
 
 	
 	
