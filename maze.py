@@ -1,5 +1,19 @@
 # -*- coding: utf-8 -*-
 """
+A busca em largura nao retorna um caminho certo.
+Prim e busca em profundidade estao funcionando perfeitamente.
+
+Porem:
+	- prim está extremamente lento, pra n = 20 ja demora muito tempo
+	- a busca em profundiade da crach com n > 500 pois excede o numero de camadas de recursao, tentei setar pra mais, mas pelo menos no meu pc so foi ate 100
+
+Ainda falta:
+	- imprimir bonitinho, usei a biblioteca iGraph mas nao sei gerar bacaninha na tela
+
+Obs:
+	- eu sou rolezeira
+
+
 ##############################################
 acabei o prim, defini as estruturas de dados(ta chatinho de mexer,
 buuuut....)
