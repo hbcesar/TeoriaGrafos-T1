@@ -30,22 +30,21 @@ o==o==o
 o  o  o 
 
 ah, raw_input() é tipo um scanf, to usanndo pra ir debugando
-###############################333##	
+####################################	
 
 
 #DONE:
  - gerar matriz "completa"
  - prim - gerar arvore geradora minima
-
-#TODO:
  - DFS
  - BFS
 
+#TODO:
+ - Rodar algoritmos n vezes 10 vezes
+ - Imprimir bonitinho
+
 
 - gerar caminho entre vertices de entrada (c) e saida (n)
-
-Os valores para n são: 10, 50, 100, 500, 1000. Para cada
-valor de n um mínimo de 10 execuções são necessárias
 
 Os valores para n são: 10, 50, 100, 500, 1000. Para cada
 valor de n um mínimo de 10 execuções são necessárias e, junto com os resultados
@@ -106,36 +105,163 @@ def createVertices(n):
 """
 
 import sys
+import time
 from random import randint
 from random import choice
 from copy import copy
+from igraph import *
 
-class Stack(object):
-	def __init__(self, ):
-		self.stack =[]
+# class Stack(object):
+# 	def __init__(self, ):
+# 		self.stack =[]
 
-	def push(self,elem):
-		self.stack.append(elem)
+# 	def push(self,elem):
+# 		self.stack.append(elem)
 
-	def pop(self):
-		return self.stack.pop()
+# 	def pop(self):
+# 		return self.stack.pop()
 
-	def isEmpty(self):
-			return len(self.stack) == 0
+# 	def isEmpty(self):
+# 			return len(self.stack) == 0
 
-class Queue(object):
-	def __init__(self, ):
-		self.queue =[]
+# class Queue(object):
+# 	def __init__(self, ):
+# 		self.queue =[]
 
-	def push(self,elem):
-		self.queue.insert(0,elem)
+# 	def push(self,elem):
+# 		self.queue.insert(0,elem)
 
-	def pop(self):
-		return self.queue.pop()
+# 	def pop(self):
+# 		return self.queue.pop()
 
-	def isEmpty(self):
-		return len(self.queue) == 0
+# 	def isEmpty(self):
+# 		return len(self.queue) == 0
 
+
+class Maze(object):
+	"""docstring for Maze"""
+	def __init__(self, n):
+		super(Maze, self).__init__()
+		self.n = n
+		self.start = 0#randint(0,n)
+		self.end = 3#randint(n*(n-1) ,(n*n)-1)
+		self.vertices = createVertices(n)
+		self.edges = createEdges(n)
+		self.spt = []
+		self.path = []
+
+	####### Imprime labiritno ##############
+	def printMaze(self):
+		for i in xrange(self.n+2):#*self.n):
+			for j in xrange(self.n+2):
+				#if
+				sys.stdout.write("x")
+			print ("")
+	
+	####### Retorna lista de adjacentes de um vertice ########
+	def adjacentVertices(self,vertice):
+		#retorna a lista de adjacencias de um vertice do grafo
+		adjlist = []
+		for e in self.edges:
+			if e[0] == vertice:
+				adjlist.append(e[1])
+			if e[1] == vertice:
+				adjlist.append(e[0])
+		return set(adjlist)
+
+	######### Retorna lista completa de arestas ##############
+	def getAdjList(self,verticesList):
+		adjlist = []
+		for v in verticesList:
+			for e in self.edges:
+				if v in e:
+					adjlist.append(e)
+
+		return list(set(adjlist))
+
+	################### Algoritmo de Prim ####################	
+	def prim(self):
+		edges = []
+		visited = []
+		toVisit = copy(self.vertices)
+
+		v = self.start
+		visited.append(v)
+		while set(self.vertices) != set(visited):
+			adj = self.getAdjList(visited)
+			for a in adj:
+				if a[0] in visited and a[1] in visited:
+					adj.remove(a)
+			e = choice(adj)
+			if e[0] not in visited :
+				visited.append(e[0])
+				edges.append(e)
+			elif e[1] not in visited:
+				visited.append(e[1])
+				edges.append(e)
+
+		self.edges = edges
+
+	################### Algoritmo de Busca em Largura ####################	
+	def bfs(self):
+		visited = []
+		q = []
+		q.append(self.start)
+		visited.append(self.start)
+		self.path.append(self.start)
+
+		if self.start != self.end:
+			while q:
+				v = q.pop(0)
+				for adj in self.adjacentVertices(v):
+					if adj not in visited:
+						visited.append(adj)
+						if adj == self.end:
+							self.path.append(adj)
+							return 
+						q.append(adj)
+						self.path.append(adj)
+					elif adj in q:
+						visited.append(adj)
+						if adj == self.end:
+							self.path.append(adj)
+							return
+						self.path.append(adj)
+		else:
+			self.path.append(self.start)
+
+	################### Algoritmo de Busca em Profundidade ####################			
+	def profundidade(self, vertice, visitados):
+		visitados.append(vertice)
+		adjacencias = self.adjacentVertices(vertice)
+
+		if vertice == self.end:
+			self.path = copy(visitados)
+		
+		for adj in adjacencias:
+			if adj not in visitados:
+				self.profundidade(adj, visitados)
+
+	def dfs(self):
+		visitados = []
+		v = self.start
+		self.path.append(v)
+
+		self.profundidade(v, visitados)
+		
+		while set(visitados) != set(self.vertices):
+			v = set(self.vertices) - set(visitados)
+			self.profundidade(v[0], visitados)
+
+	def imprimir(self):
+		g = Graph();
+
+		for i in self.vertices:
+			g.add_vertices(i)
+
+		g.add_edges(self.edges)
+
+		print g
 
 def createVertices(n):
 	vertices = []
@@ -164,150 +290,47 @@ def createEdges(n):
 			countColumn = 0
 			countLine += 1
 
-
-		elif i % n != 0:
-			edges.append((i,i+1))
-			edges.append((i,n+i))
-
 		else:
 			edges.append((i,i+1))
 			edges.append((i,n+i))
 	return edges
-	
-
-class Maze(object):
-	"""docstring for Maze"""
-	def __init__(self, n):
-		super(Maze, self).__init__()
-		self.n = n
-		self.start = 0#randint(0,n)
-		self.end = 8#randint( n*(n-1) ,(n*n)-1)
-		self.vertices = createVertices(n)
-		self.edges = createEdges(n)
-		self.spt = []
-		self.path = []
-
-	def printMaze(self):
-		for i in xrange(self.n+2):#*self.n):
-			for j in xrange(self.n+2):
-				#if
-				sys.stdout.write("x")
-			print ("")
-
-	
-	def adjacentVertices(self,vertice):
-		#retorna a lista de adjacencias de um vertice do grafo
-		adjlist = []
-		for e in self.edges:
-			if e[0] == vertice:
-				adjlist.append(e[1])
-			if e[1] == vertice:
-				adjlist.append(e[0])
-		return adjlist
-	
-
-	#provavelmente n vai precisar, mas taí 
-	def getCompleteAdjList(self):
-		adjlist = []
-		for i in xrange(self.n*self.n):
-			a = self.adjacent(self.vertices[i])
-			adjlist.append(a)
-		return adjlist
-
-	def getAdjList(self,verticesList):
-		adjlist = []
-		for v in verticesList:
-			for e in self.edges:
-				if v in e:
-					adjlist.append(e)
-
-		#print adjlist
-		#print list(set(adjlist))
-		#raw_input()
-		return list(set(adjlist))
-
-
-	def prim(self):
-		edges = []
-		visited = []
-		toVisit = copy(self.vertices)
-
-		v = self.start
-		visited.append(v)
-		while set(self.vertices) != set(visited):
-			adj = self.getAdjList(visited)
-			for a in adj:
-				if a[0] in visited and a[1] in visited:
-					adj.remove(a)
-			e = choice(adj)
-			if e[0] not in visited :
-				visited.append(e[0])
-				edges.append(e)
-			elif e[1] not in visited:
-				visited.append(e[1])
-				edges.append(e)
-		#print edges
-		#self.spt = edges
-		self.edges = edges
-
-	def bfs(self):
-		visited = []
-		q = Queue()
-		q.push(self.start)
-
-		while not q.isEmpty():
-			print "fila:" ,q.queue
-			print "visited: " ,visited
-			v = q.pop()
-			if v not in visited:
-				visited.append(v)
-				adj = self.adjacentVertices(v)
-				print "adj:" ,adj
-				for w in adj:
-					if w not in visited:
-						q.push(w)
-				raw_input()
-
-		
-			
-###################################################			
-	def profundidade(vertice, visitados):
-		adjacencias =  adjacent(vertice)
-		visitados.append(vertice)
-		
-		for adj in adjacencias:
-			if adj not in visitados:
-				profundidade(adj)
-			
-	def DFS(self):
-		visitados = []
-		
-		visitados.append(self.start)
-		
-		while len(visitados) < self.n:
-			profundidade(self.start, visitados)
-		
-
-#v é o vertice, i é o indice do vertice e visitados é a lista de vertices visitados
-
-			
 
 def main(args):
-	n = 3
-	v = createVertices(n)
-	e = createEdges(n)
-	m = Maze(n)
+	sys.setrecursionlimit(1000000) #sem isso ele fala que o nivel de recursao para o busca em profundidade atingiu o maximo
+	#porem quando passa de 500 ele quebra
+	n = [10, 50, 100]
+
+	m = Maze(2)
 	m.prim()
-	print m.edges
-	p = m.bfs()
-	print p
-	#m.printMaze()
+	m.imprimir()
+	m.bfs()
+	print m.path
+
+	###### Roda algoritmo de Prim com Busca em Largura
+	# for i in n:
+	# 	tempo = 0
+	# 	for j in range(0, 10):
+	# 		m = Maze(i)
+	# 		inicio = time.clock()
+	# 		m.prim()
+	# 		m.bfs()
+	# 		fim = time.clock()
+	# 	tempo = tempo + (fim - inicio)
+	# 	print "Media de tempo gasto (Algoritmo de Prim) para N =", i
+	# 	print "t=", tempo
 
 	
-	
-	#print v
-	#print e
-
+	###### Roda algoritmo de Busca em Profundidade
+	# for i in n:
+	# 	tempo = 0
+	# 	for j in range(0, 10):
+	# 		m = Maze(50)
+	# 		inicio = time.clock()
+	# 		m.dfs()
+	# 		fim = time.clock()
+	# 		tempo = tempo + (fim - inicio)
+	# 	print "Media de tempo gasto (Algoritmo de Busca em Profundidade) para N =",i
+	# 	print "t=", tempo/i
 
 if __name__ == '__main__':
 	main(sys.argv)
