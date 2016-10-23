@@ -174,7 +174,6 @@ class Maze(object):
 	
 	####### Retorna lista de adjacentes de um vertice ########
 	def adjacentVertices(self,vertice):
-		#retorna a lista de adjacencias de um vertice do grafo
 		adjlist = []
 		for e in self.edges:
 			if e[0] == vertice:
@@ -230,17 +229,8 @@ class Maze(object):
 				for adj in self.adjacentVertices(v):
 					if adj not in visited:
 						visited.append(adj)
-						if adj == self.end:
-							self.path.append(adj)
-							return 
 						q.append(adj)
-						self.path.append(adj)
-					elif adj in q:
-						visited.append(adj)
-						if adj == self.end:
-							self.path.append(adj)
-							return
-						self.path.append(adj)
+				raw_input()
 		else:
 			self.path.append(self.start)
 
@@ -314,10 +304,11 @@ def main(args):
 	#porem quando passa de 500 ele quebra
 	n = [10, 50, 100]
 
-	m = Maze(2)
-	m.prim()
+	m = Maze(3)
+	# m.bfs()
+	
+	m.dfs()
 	m.imprimir()
-	m.bfs()
 	print m.path
 
 	###### Roda algoritmo de Prim com Busca em Largura
