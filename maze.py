@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-A busca em largura nao retorna um caminho certo.
-Prim e busca em profundidade estao funcionando perfeitamente.
+#DONE:
+- busca em largura OK
+- busca em profundidade OK (so nao atualiza lista)
+- codigo que executa cada valor 10 vezes OK
 
-Porem:
-	- prim está extremamente lento, pra n = 20 ja demora muito tempo
-	- a busca em profundiade da crach com n > 500 pois excede o numero de camadas de recursao, tentei setar pra mais, mas pelo menos no meu pc so foi ate 100
-
-Ainda falta:
-	- imprimir bonitinho, usei a biblioteca iGraph mas nao sei gerar bacaninha na tela
+#TO DO:
+- atualizar lista de adjacencias na busca em profundidade
+- mudar prim pra ficar mais eficiente
+- ver se há uma forma melhor de imprimir
+- lembrar de voltar inicio e fim pra aleatorio
 
 Obs:
-	- eu sou rolezeira
+- eu sou rolezeira
 
 
 ##############################################
@@ -73,7 +74,7 @@ i i+1 n-1
 
 	o-o-o
 	| | | |
-    o-o-o
+	o-o-o
 	| | | |
 	o-o-o
 
@@ -125,31 +126,31 @@ from random import choice
 from copy import copy
 from igraph import *
 
-# class Stack(object):
-# 	def __init__(self, ):
-# 		self.stack =[]
+class Stack(object):
+	def __init__(self, ):
+		self.stack =[]
 
-# 	def push(self,elem):
-# 		self.stack.append(elem)
+	def push(self,elem):
+		self.stack.append(elem)
 
-# 	def pop(self):
-# 		return self.stack.pop()
+	def pop(self):
+		return self.stack.pop()
 
-# 	def isEmpty(self):
-# 			return len(self.stack) == 0
+	def isEmpty(self):
+			return len(self.stack) == 0
 
-# class Queue(object):
-# 	def __init__(self, ):
-# 		self.queue =[]
+class Queue(object):
+	def __init__(self, ):
+		self.queue =[]
 
-# 	def push(self,elem):
-# 		self.queue.insert(0,elem)
+	def push(self,elem):
+		self.queue.insert(0,elem)
 
-# 	def pop(self):
-# 		return self.queue.pop()
+	def pop(self):
+		return self.queue.pop()
 
-# 	def isEmpty(self):
-# 		return len(self.queue) == 0
+	def isEmpty(self):
+		return len(self.queue) == 0
 
 
 class Maze(object):
@@ -158,7 +159,7 @@ class Maze(object):
 		super(Maze, self).__init__()
 		self.n = n
 		self.start = 0#randint(0,n)
-		self.end = 3#randint(n*(n-1) ,(n*n)-1)
+		self.end = 8#randint(n*(n-1) ,(n*n)-1)
 		self.vertices = createVertices(n)
 		self.edges = createEdges(n)
 		self.spt = []
@@ -216,47 +217,147 @@ class Maze(object):
 		self.edges = edges
 
 	################### Algoritmo de Busca em Largura ####################	
+	def mountmap(self):
+		graph = {}
+
+		for v in self.vertices:
+			graph[v] = list(self.adjacentVertices(v))
+
+		return graph
+
 	def bfs(self):
 		visited = []
-		q = []
-		q.append(self.start)
+		q = Queue()
+		q.push(self.start)
 		visited.append(self.start)
 		self.path.append(self.start)
+		found = False
 
 		if self.start != self.end:
-			while q:
-				v = q.pop(0)
+			while not q.isEmpty():
+				v = q.pop()
 				for adj in self.adjacentVertices(v):
+					if adj == self.end and not found:
+						self.path.extend(q.queue)
+						self.path.append(adj)
+						found = True
+
 					if adj not in visited:
 						visited.append(adj)
-						q.append(adj)
-				raw_input()
+						q.push(adj)
+
+				# raw_input()
 		else:
 			self.path.append(self.start)
 
-	################### Algoritmo de Busca em Profundidade ####################			
-	def profundidade(self, vertice, visitados):
+	def bfs2(self):
+		# cria um dicionario com uma lista de caminhos
+		graph = self.mountmap()
+
+		# lista de caminhos
+		queue = []
+
+		# insere o primeiro caminho na lista
+		queue.append([self.start])
+
+		while queue:
+			# pega o primeiro caminho da lista
+			path = queue.pop(0)
+
+			# pega o ultimo vertice da lista de caminhos
+			node = path[-1]
+
+			# se caminho for encontrado, retorna
+			if node == self.end:
+				self.path = copy(path)
+				return
+
+			# pega todos os caminhos adjacentes ao nó, controi novo caminho e adiciona a fila
+			for adjacent in graph.get(node, []):
+				new_path = list(path)
+				new_path.append(adjacent)
+				queue.append(new_path)
+
+
+
+	################### Algoritmo de Busca em Profundidade (recursivo) ####################			
+	def profundidade(self, vertice, visitados, pilha):
 		visitados.append(vertice)
 		adjacencias = self.adjacentVertices(vertice)
 
+		pilha.push(vertice)
+
 		if vertice == self.end:
-			self.path = copy(visitados)
+			self.path = copy(pilha.stack)
 		
 		for adj in adjacencias:
 			if adj not in visitados:
-				self.profundidade(adj, visitados)
+				self.profundidade(adj, visitados, pilha)
 
-	def dfs(self):
+		pilha.pop()
+
+	def dfs_recursivo(self):
 		visitados = []
+		pilha = Stack()
+
 		v = self.start
 		self.path.append(v)
 
-		self.profundidade(v, visitados)
+		self.profundidade(v, visitados, pilha)
 		
 		while set(visitados) != set(self.vertices):
 			v = set(self.vertices) - set(visitados)
-			self.profundidade(v[0], visitados)
+			self.profundidade(v[0], visitados, pilha)
 
+	################### Algoritmo de Busca em Profundidade (recursivo) ####################	
+	def dfs_iterativo(self):
+		stack = Stack()
+
+		#lista de visitados
+		visited = []
+
+		#adiciona primeiro vertice a pilha
+		stack.push(self.start)
+
+		#dicionario para manter caminho para o vertice alvo
+		parentMap = {}
+		
+		while not stack.isEmpty():
+			#pega primeiro da pilha
+			parent = stack.pop()
+			
+			#se ja tiver sido visitado, nao faz nada
+			if parent in visited: 
+				continue
+
+			#marca que o vertice alvo esta na arvore (evitar erros)
+			if parent == self.end:
+				found = True
+
+			#marca o vertice como visitado
+			visited.append(parent)
+			children = self.adjacentVertices(parent)
+
+			#adiciona na pilha (e no mapa de caminhos)
+			for child in children:
+				stack.push(child)
+				parentMap.setdefault(child, []).append(parent)
+
+		#se o vertice foi encontrado, gera caminho até ele
+		if found:
+			path = []
+
+			#percorre o mapa de traz pra frente gerando o caminho
+			curr = self.end
+			while curr:
+				path.insert(0, curr)
+			 	curr = parentMap[curr][0]
+			path.insert(0, self.start)
+
+			#copia o caminho para variavel da classe
+			self.path = copy(path)
+
+	################### Imprime o labirinto ####################	
 	def imprimir(self):
 		g = Graph();
 
@@ -300,17 +401,13 @@ def createEdges(n):
 	return edges
 
 def main(args):
-	sys.setrecursionlimit(1000000) #sem isso ele fala que o nivel de recursao para o busca em profundidade atingiu o maximo
-	#porem quando passa de 500 ele quebra
-	n = [10, 50, 100]
+	n = [10, 50, 100, 500, 1000]
 
 	m = Maze(3)
-	# m.bfs()
-	
-	m.dfs()
+	m.prim()
+	m.dfs_iterativo()
 	m.imprimir()
 	print m.path
-
 	###### Roda algoritmo de Prim com Busca em Largura
 	# for i in n:
 	# 	tempo = 0
