@@ -226,31 +226,6 @@ class Maze(object):
 		return graph
 
 	def bfs(self):
-		visited = []
-		q = Queue()
-		q.push(self.start)
-		visited.append(self.start)
-		self.path.append(self.start)
-		found = False
-
-		if self.start != self.end:
-			while not q.isEmpty():
-				v = q.pop()
-				for adj in self.adjacentVertices(v):
-					if adj == self.end and not found:
-						self.path.extend(q.queue)
-						self.path.append(adj)
-						found = True
-
-					if adj not in visited:
-						visited.append(adj)
-						q.push(adj)
-
-				# raw_input()
-		else:
-			self.path.append(self.start)
-
-	def bfs2(self):
 		# cria um dicionario com uma lista de caminhos
 		graph = self.mountmap()
 
@@ -309,7 +284,7 @@ class Maze(object):
 			v = set(self.vertices) - set(visitados)
 			self.profundidade(v[0], visitados, pilha)
 
-	################### Algoritmo de Busca em Profundidade (recursivo) ####################	
+	################### Algoritmo de Busca em Profundidade (iterativo) ####################	
 	def dfs_iterativo(self):
 		stack = Stack()
 
@@ -321,13 +296,16 @@ class Maze(object):
 
 		#dicionario para manter caminho para o vertice alvo
 		parentMap = {}
-		
+
+		#nova lista de adjacencias
+		edges = []		
+
 		while not stack.isEmpty():
 			#pega primeiro da pilha
 			parent = stack.pop()
 			
 			#se ja tiver sido visitado, nao faz nada
-			if parent in visited: 
+			if parent in visited:
 				continue
 
 			#marca que o vertice alvo esta na arvore (evitar erros)
@@ -341,7 +319,12 @@ class Maze(object):
 			#adiciona na pilha (e no mapa de caminhos)
 			for child in children:
 				stack.push(child)
-				parentMap.setdefault(child, []).append(parent)
+
+				#atualiza lista de pais caso ainda nao houver
+				if child not in parentMap:
+					parentMap[child] = parent
+
+		#endwhile
 
 		#se o vertice foi encontrado, gera caminho até ele
 		if found:
@@ -351,11 +334,19 @@ class Maze(object):
 			curr = self.end
 			while curr:
 				path.insert(0, curr)
-			 	curr = parentMap[curr][0]
+			 	curr = parentMap[curr]
 			path.insert(0, self.start)
 
 			#copia o caminho para variavel da classe
 			self.path = copy(path)
+
+		#deleta a raiz do mapa de pais pois ela nao tem um pai
+		del parentMap[self.start]
+
+		#gera e atualiza nova lista de adjacencias
+		for parent, child in parentMap.iteritems():
+			edges.append((parent, child))
+		self.edges = edges
 
 	################### Imprime o labirinto ####################	
 	def imprimir(self):
@@ -367,6 +358,8 @@ class Maze(object):
 		g.add_edges(self.edges)
 
 		print g
+
+###### end class Maze
 
 def createVertices(n):
 	vertices = []
@@ -404,7 +397,6 @@ def main(args):
 	n = [10, 50, 100, 500, 1000]
 
 	m = Maze(3)
-	m.prim()
 	m.dfs_iterativo()
 	m.imprimir()
 	print m.path
