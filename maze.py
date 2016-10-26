@@ -254,45 +254,32 @@ class Maze(object):
 
 def main(args):
 	n = [10, 50, 100]#, 500, 1000]
-	# n = [500, 1000]
 
-	m = Maze(3)
-	m.imprimir
-	m.prim()
-	m.imprimir
-	m.bfs()
-	print m.path
-
-	m = Maze(3)
-	m.dfs_iterativo()
-	m.imprimir
-	print m.path
-
-	###### Roda algoritmo de Prim com Busca em Largura
-	# for i in n:
-	# 	tempo = 0
-	# 	for j in range(0, 10):
-	# 		m = Maze(i)
-	# 		m.prim()
-	# 		inicio = time.clock()
-	# 		m.bfs()
-	# 		fim = time.clock()
-	# 		tempo = tempo + (fim - inicio)
-	# 	tempo = tempo/10
-	# 	print i, tempo
+	##### Roda algoritmo de Prim com Busca em Largura
+	for i in n:
+		tempo = 0
+		for j in range(0, 10):
+			m = Maze(i)
+			m.prim()
+			inicio = time.clock()
+			m.bfs()
+			fim = time.clock()
+			tempo = tempo + (fim - inicio)
+		tempo = tempo/10
+		print i, tempo
 
 
-	###### Roda algoritmo de Busca em Profundidade
-	# for i in n:
-	# 	tempo = 0
-	# 	for j in range(0, 10):
-	# 		m = Maze(i)
-	# 		inicio = time.clock()
-	# 		m.dfs_iterativo()
-	# 		fim = time.clock()
-	# 		tempo = tempo + (fim - inicio)
-		# tempo = tempo/10
-	# 	print i, tempo
+	##### Roda algoritmo de Busca em Profundidade
+	for i in n:
+		tempo = 0
+		for j in range(0, 10):
+			m = Maze(i)
+			inicio = time.clock()
+			m.dfs_iterativo()
+			fim = time.clock()
+			tempo = tempo + (fim - inicio)
+		tempo = tempo/10
+		print i, tempo
 
 if __name__ == '__main__':
 	main(sys.argv)
