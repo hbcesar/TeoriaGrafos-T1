@@ -68,13 +68,7 @@ class Maze(object):
 		for i in xrange(n*n):
 			countColumn += 1
 
-			if i == 0:
-				self.vertices[i].edges.append((i, i+1))
-				self.vertices[i].edges.append((i, n))
-				self.vertices[i+1].edges.append((i+1, i))
-				self.vertices[n].edges.append((n, i))
-
-			elif countLine == n-1:
+			if countLine == n-1:
 				if (i+1 < n*n):
 					self.vertices[i].edges.append((i, i+1))
 					self.vertices[i+1].edges.append((i+1, i))
@@ -94,10 +88,7 @@ class Maze(object):
 
 
 	################### Funcoes de manutencao de listas ####################	
-	def addToWall(self, vertice, wall):
-		for adj in self.adjacentes(vertice):
-			wall.append((vertice, adj))
-
+	#atualiza lista de adjacencias de cada vertices
 	def updateEdges(self, tree):
 		self.edges = tree
 
@@ -109,7 +100,6 @@ class Maze(object):
 			self.vertices[k].edges.append((k, v))
 
 	def pathfinder(self, parentMap):
-		#se o vertice foi encontrado, gera caminho até ele
 		path = []
 
 		#percorre o mapa de traz pra frente gerando o caminho
@@ -122,7 +112,7 @@ class Maze(object):
 		#copia o caminho para variavel da classe
 		self.path = copy(path)
 
-		#retorna lista de vertices adjacentes a um dado vertice
+	#retorna lista de vertices adjacentes a um dado vertice
 	def adjacentes(self, vertice):
 		adjlist = []
 		vertice = self.vertices[vertice]
@@ -136,6 +126,10 @@ class Maze(object):
 
 
 	################### Algoritmo de Prim ####################	
+	def addToWall(self, vertice, wall):
+		for adj in self.adjacentes(vertice):
+			wall.append((vertice, adj))
+
 	def prim(self):
 		maze = []
 		wall = []
@@ -150,7 +144,6 @@ class Maze(object):
 		while wall:
 			e = choice(wall)
 			wall.remove(e)
-			# e = wall.pop()
 
 			if e[0] not in maze:
 				maze.append(e[0])
@@ -161,7 +154,6 @@ class Maze(object):
 				tree.append(e)
 				self.addToWall(e[1], wall)
 
-		
 		self.updateEdges(tree)
 
 	################### Algoritmo de Busca em Largura ####################	
@@ -247,6 +239,7 @@ class Maze(object):
 			edges.append((parent, child))
 		self.edges = edges
 
+	###### imprime grafico bonitinho ##########
 	def imprimir(self):
 		g = Graph();
 
@@ -260,16 +253,16 @@ class Maze(object):
 
 
 def main(args):
-	n = [10, 50, 100, 500, 1000]
+	n = [500, 1000]#[10, 50, 100, 500, 1000]
 
 	###### Roda algoritmo de Prim com Busca em Largura
 	for i in n:
 		tempo = 0
-		for j in range(0, 3):
-			m = Maze(i)
+		for j in range(0, 1):
+			m = Maze(3)
 			inicio = time.clock()
 			m.prim()
-			# m.bfs()
+			m.bfs()
 			fim = time.clock()
 			tempo = tempo + (fim - inicio)
 		tempo = tempo/3
@@ -278,7 +271,6 @@ def main(args):
 
 	###### Roda algoritmo de Busca em Profundidade
 	# for i in n:
-		
 	# 	tempo = 0
 	# 	for j in range(0, 10):
 	# 		m = Maze(i)
