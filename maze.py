@@ -5,7 +5,7 @@ from random import randint
 from random import choice
 from copy import copy
 from heapq import heappop, heappush
-# from igraph import *
+from igraph import *
 
 class Stack(object):
 	def __init__(self):
@@ -148,11 +148,11 @@ class Maze(object):
 			if e[0] not in maze:
 				maze.append(e[0])
 				tree.append(e)
-				self.addToWall(e[0], edges)
+				self.addToEdge(e[0], edges)
 			elif e[1] not in maze:
 				maze.append(e[1])
 				tree.append(e)
-				self.addToWall(e[1], edges)
+				self.addToEdge(e[1], edges)
 
 		self.updateEdges(tree)
 
@@ -253,33 +253,46 @@ class Maze(object):
 
 
 def main(args):
-	# n = [10, 50, 100]#, 500, 1000]
-	n = [500, 1000]
+	n = [10, 50, 100]#, 500, 1000]
+	# n = [500, 1000]
+
+	m = Maze(3)
+	m.imprimir
+	m.prim()
+	m.imprimir
+	m.bfs()
+	print m.path
+
+	m = Maze(3)
+	m.dfs_iterativo()
+	m.imprimir
+	print m.path
 
 	###### Roda algoritmo de Prim com Busca em Largura
-	for i in n:
-		tempo = 0
-		for j in range(0, 10):
-			m = Maze(3)
-			inicio = time.clock()
-			m.prim()
-			m.bfs()
-			fim = time.clock()
-			tempo = tempo + (fim - inicio)
-		tempo = tempo/3
-		print i, tempo
+	# for i in n:
+	# 	tempo = 0
+	# 	for j in range(0, 10):
+	# 		m = Maze(i)
+	# 		m.prim()
+	# 		inicio = time.clock()
+	# 		m.bfs()
+	# 		fim = time.clock()
+	# 		tempo = tempo + (fim - inicio)
+	# 	tempo = tempo/10
+	# 	print i, tempo
 
 
 	###### Roda algoritmo de Busca em Profundidade
-	for i in n:
-		tempo = 0
-		for j in range(0, 10):
-			m = Maze(i)
-			inicio = time.clock()
-			m.dfs_iterativo()
-			fim = time.clock()
-			tempo = tempo + (fim - inicio)
-		print i, tempo
+	# for i in n:
+	# 	tempo = 0
+	# 	for j in range(0, 10):
+	# 		m = Maze(i)
+	# 		inicio = time.clock()
+	# 		m.dfs_iterativo()
+	# 		fim = time.clock()
+	# 		tempo = tempo + (fim - inicio)
+		# tempo = tempo/10
+	# 	print i, tempo
 
 if __name__ == '__main__':
 	main(sys.argv)
