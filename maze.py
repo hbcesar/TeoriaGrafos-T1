@@ -5,7 +5,7 @@ from random import randint
 from random import choice
 from copy import copy
 from heapq import heappop, heappush
-from igraph import *
+# from igraph import *
 
 class Stack(object):
 	def __init__(self):
@@ -126,33 +126,33 @@ class Maze(object):
 
 
 	################### Algoritmo de Prim ####################	
-	def addToWall(self, vertice, wall):
+	def addToEdge(self, vertice, edges):
 		for adj in self.adjacentes(vertice):
-			wall.append((vertice, adj))
+			edges.append((vertice, adj))
 
 	def prim(self):
 		maze = []
-		wall = []
+		edges = []
 		tree = []
 		start = self.vertices[self.start]
 		start = start.i
 		maze.append(start)
 
 		for adj in self.adjacentes(start):
-			wall.append((start, adj))
+			edges.append((start, adj))
 
-		while wall:
-			e = choice(wall)
-			wall.remove(e)
+		while edges:
+			e = choice(edges)
+			edges.remove(e)
 
 			if e[0] not in maze:
 				maze.append(e[0])
 				tree.append(e)
-				self.addToWall(e[0], wall)
+				self.addToWall(e[0], edges)
 			elif e[1] not in maze:
 				maze.append(e[1])
 				tree.append(e)
-				self.addToWall(e[1], wall)
+				self.addToWall(e[1], edges)
 
 		self.updateEdges(tree)
 
@@ -253,12 +253,13 @@ class Maze(object):
 
 
 def main(args):
-	n = [500, 1000]#[10, 50, 100, 500, 1000]
+	# n = [10, 50, 100]#, 500, 1000]
+	n = [500, 1000]
 
 	###### Roda algoritmo de Prim com Busca em Largura
 	for i in n:
 		tempo = 0
-		for j in range(0, 1):
+		for j in range(0, 10):
 			m = Maze(3)
 			inicio = time.clock()
 			m.prim()
@@ -270,16 +271,15 @@ def main(args):
 
 
 	###### Roda algoritmo de Busca em Profundidade
-	# for i in n:
-	# 	tempo = 0
-	# 	for j in range(0, 10):
-	# 		m = Maze(i)
-	# 		inicio = time.clock()
-	# 		m.dfs()
-	# 		fim = time.clock()
-	# 		tempo = tempo + (fim - inicio)
-	# 	print "Media de tempo gasto (Algoritmo de Busca em Profundidade) para N =",i
-	# 	print "t=", tempo/i
+	for i in n:
+		tempo = 0
+		for j in range(0, 10):
+			m = Maze(i)
+			inicio = time.clock()
+			m.dfs_iterativo()
+			fim = time.clock()
+			tempo = tempo + (fim - inicio)
+		print i, tempo
 
 if __name__ == '__main__':
 	main(sys.argv)
