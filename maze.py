@@ -131,9 +131,9 @@ class Maze(object):
 			edges.append((vertice, adj))
 
 	def prim(self):
-		maze = []
-		edges = []
-		tree = []
+		maze = [] #lista de visitados
+		edges = [] #lista de arestas
+		tree = [] #arvore gerada
 		start = self.vertices[self.start]
 		start = start.i
 		maze.append(start)
@@ -253,33 +253,48 @@ class Maze(object):
 
 
 def main(args):
-	n = [10, 50, 100]#, 500, 1000]
+	try:
+		n=int(raw_input('Digite o valor de N:'))
+	except ValueError:
+		print "Entrada inválida"
 
 	##### Roda algoritmo de Prim com Busca em Largura
-	for i in n:
-		tempo = 0
-		for j in range(0, 10):
-			m = Maze(i)
-			m.prim()
-			inicio = time.clock()
-			m.bfs()
-			fim = time.clock()
-			tempo = tempo + (fim - inicio)
-		tempo = tempo/10
-		print i, tempo
+	tempo = 0
 
+	m = Maze(n)
+	print "Iniciando algoritmo de Prim"
+	inicio = time.clock()
+	m.prim()
+	fim = time.clock()
+	print "Tempo gasto:", round((fim - inicio) * 1000, 4), "segundos"
+	print "\n"
+
+	print "Iniciando algoritmo de Busca em Largura"
+	inicio = time.clock()
+	m.bfs()
+	fim = time.clock()
+	print "Tempo gasto:", round((fim - inicio) * 1000, 4), "segundos"
+	print "\n"
+
+	print "Arvore Gerada:"
+	m.imprimir()
+	print "Caminho gerado:"
+	print m.path
+	print "\n"
 
 	##### Roda algoritmo de Busca em Profundidade
-	for i in n:
-		tempo = 0
-		for j in range(0, 10):
-			m = Maze(i)
-			inicio = time.clock()
-			m.dfs_iterativo()
-			fim = time.clock()
-			tempo = tempo + (fim - inicio)
-		tempo = tempo/10
-		print i, tempo
+	print "Iniciando algoritmo Busca em Profundidade"
+	m = Maze(n)
+
+	inicio = time.clock()
+	m.dfs_iterativo()
+	fim = time.clock()
+	print "Tempo gasto:", round((fim - inicio) * 1000, 4), "segundos"
+
+	print "Arvore Gerada:"
+	m.imprimir()
+	print "Caminho gerado:"
+	print m.path
 
 if __name__ == '__main__':
 	main(sys.argv)
